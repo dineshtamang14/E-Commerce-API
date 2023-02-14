@@ -7,6 +7,7 @@ import express from 'express';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
 import { errorHandler } from 'common-usage.js';
+import { authRouters } from './auth/auth.routers';
 
 export class AppModule {
     constructor(public app: Application){
@@ -25,6 +26,7 @@ export class AppModule {
             secure: false
         }))
 
+        app.use(authRouters)
         app.use(errorHandler);
         Object.setPrototypeOf(this, AppModule.prototype);
     }

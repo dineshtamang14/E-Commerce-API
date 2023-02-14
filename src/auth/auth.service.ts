@@ -10,26 +10,26 @@ export class AuthService {
         public authenticationService: AuthenticationService
     ) {}
 
-    async signup(createUserDto: AuthDto, errCallback: NextFunction) {
+    async signup(createUserDto: AuthDto) {
         const existingUser = await this.userService.findOneByEmail(createUserDto.email);
-        if(existingUser) return errCallback(new BadRequestError('this email is taken'))
+        if(existingUser) return { message: "email is taken" }
 
         const newUser = await this.userService.create(createUserDto);
 
         const jwt = this.authenticationService.generateJwt({ email: createUserDto.email, userId: newUser.id }, process.env.JWT_KEY!);
         
-        return jwt;
+        return { jwt };
     }
 
-    async signin(signinDto: AuthDto, errCallback: NextFunction) {
+    async signin(signinDto: AuthDto) {
         const user = await this.userService.findOneByEmail(signinDto.email);
-        if(!user) return errCallback(new BadRequestError('wrong credentials'))
+        if(!user) return { message: 'wrong credentials' };
 
         const samePwd = this.authenticationService.pwdCompare(user.password, signinDto.password);
-        if(!samePwd) return errCallback(new BadRequestError('wrong Credentials'));
+        if(!samePwd) return { message: 'wrong credentials' };
         
         const jwt = this.authenticationService.generateJwt({ email: user.email, userId: user.id }, process.env.JWT_KEY!);
-        return jwt;
+        return { jwt };
     } 
 }
 
