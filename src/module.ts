@@ -6,7 +6,7 @@ import cookieSession from 'cookie-session';
 import express from 'express';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
-
+import { errorHandler } from 'common-usage.js';
 
 export class AppModule {
     constructor(public app: Application){
@@ -24,6 +24,9 @@ export class AppModule {
             signed: false,
             secure: false
         }))
+
+        app.use(errorHandler);
+        Object.setPrototypeOf(this, AppModule.prototype);
     }
 
     async start() {
